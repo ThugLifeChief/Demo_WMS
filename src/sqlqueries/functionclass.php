@@ -946,6 +946,116 @@
 
       }
     }
+
+    // bool Storageblocked(sgln)
+    public function Storageblocked($sgln){
+
+      $object = new sqlquery2;
+
+      // check if sgln is emty
+      $table = 'STELLPLATZ';
+      $column = 'P_STATUS';
+      $index = 'P_SGLN_ID';
+      $search = $sgln;
+
+      $return = $object->SelectFromDB($table,$column,$index,$search);
+
+      if ($return == 'BESETZT'){
+        $return = "true";
+        return $return;
+        exit;
+      } else {
+        $return = "false";
+        return $return;
+        exit;
+      }
+    }
+
+    // type TagIDType(id)
+    public function TagIDType($id){
+
+      $object = new sqlquery2;
+
+      // check if id in artikel
+      $table = 'ARTIKEL';
+      $index = 'P_SGTIN_ID';
+      $search = $id;
+
+      if($object->checkifinTable($table,$index,$search) == true){
+        $return = "artikel";
+        return $return;
+        exit;
+      }
+
+      // check if id in FLURFOERDERMITTEL
+      $table = 'FLURFOERDERMITTEL';
+      $index = 'P_GIAI_ID';
+      $search = $id;
+
+      if($object->checkifinTable($table,$index,$search) == true){
+        $return = "fluerfoerdermittel";
+        return $return;
+        exit;
+      }
+
+      // check if id in stellpaltz
+      $table = 'STELLPLATZ';
+      $index = 'P_SGLN_ID';
+      $search = $id;
+
+      if($object->checkifinTable($table,$index,$search) == true){
+        $return = "stellplatz";
+        return $return;
+        exit;
+      }
+
+      //check if id in ANHAENGER
+      $table = 'ANHAENGER';
+      $index = 'P_GRAI_ID';
+      $search = $id;
+
+      if($object->checkifinTable($table,$index,$search) == true){
+        $return = "anhaenger";
+        return $return;
+        exit;
+      }
+
+      //check if id in ANHAENGER
+      $table = 'LADEHILFSMITTEL';
+      $index = 'P_GRAI_ID';
+      $search = $id;
+
+      if($object->checkifinTable($table,$index,$search) == false){
+        $return = "error not in db";
+        return $return;
+        exit;
+
+      } else {
+
+        $table = 'LADEHILFSMITTEL';
+        $column = 'LADEHILFSMITTELTYP_P_OID';
+        $index = 'P_GRAI_ID';
+        $search = $id;
+
+        $LADEHILFSMITTELTYP_P_OID = $object->SelectFromDB($table,$column,$index,$search);
+
+        if ($LADEHILFSMITTELTYP_P_OID == null){
+          $return = "Ladehilfsmittel not linked to Type";
+          return $return;
+          exit;
+        }
+
+        $table = 'LADEHILFSMITTELTYP';
+        $column = 'P_BEZEICHNUNG';
+        $index = 'P_OID';
+        $search = $LADEHILFSMITTELTYP_P_OID;
+
+        $return = $object->SelectFromDB($table,$column,$index,$search);
+        return $return;
+
+      }
+
+    }
 }
 
 

@@ -175,3 +175,25 @@ $app->get('/restapi/functions/requestTuggerTrainLoading/giai/{giai}', function(R
     echo '{"return" : '.json_encode($return).'}';
 
 });
+
+// bool Storageblocked(sgln)
+$app->get('/restapi/functions/Storageblocked/sgln/{sgln}', function(Request $request, Response $response){
+    $sgln = $request->getAttribute('sgln');
+
+    $object = new functionclass;
+    $return = $object->Storageblocked($sgln);
+
+    echo '{"bool" : '.json_encode($return).'}';
+
+});
+
+// type TagIDType(id);
+$app->get('/restapi/functions/TagIDType/id/{id}', function(Request $request, Response $response){
+    $id = $request->getAttribute('id');
+
+    $object = new functionclass;
+    $return = $object->TagIDType($id);
+
+    echo '{"type" : '.json_encode($return).'}';
+
+});

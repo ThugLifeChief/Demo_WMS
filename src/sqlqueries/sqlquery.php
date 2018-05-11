@@ -1,5 +1,7 @@
 <?php
 
+include_once __DIR__.'/sqlfiles/db_setup_tables.php';
+
 class sqlquery {
 
   //Search for all Table names
@@ -324,6 +326,62 @@ class sqlquery {
         return '<p>Error SQL Query in sqlquery.php: '.$e->getMessage().'</p>';
     }
   }
+
+  // resetDB
+  public function resetDB($table){
+
+    try{
+
+      //get DB object
+      $db = new db();
+
+      //set SQL Query
+      $sql = "DROP DATABASE".$db->$dbname;
+
+      //Connect
+      $db = $db->connect();
+
+      //delete Data
+      $stmt = $db->prepare($sql);
+
+      //execute
+      $stmt->execute();
+      $db = null;
+
+
+    } catch (PDOException $e) {
+        //return '{"error": {"text":'.$e->getMessage().'}';
+        return '<p>Error SQL Query in sqlquery.php: '.$e->getMessage().'</p>';
+    }
+
+    try{
+
+      $db_setup = new db_setup();
+
+      //get DB object
+      $db = new db();
+
+      //set SQL Query
+      $sql = $db_setup->$db_setup_string;
+
+      //Connect
+      $db = $db->connect();
+
+      //delete Data
+      $stmt = $db->prepare($sql);
+
+      //execute
+      $stmt->execute();
+      $db = null;
+
+      return 'success';
+
+    } catch (PDOException $e) {
+        //return '{"error": {"text":'.$e->getMessage().'}';
+        return '<p>Error SQL Query in sqlquery.php: '.$e->getMessage().'</p>';
+    }
+  }
+
 }
 
  ?>

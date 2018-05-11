@@ -327,32 +327,8 @@ class sqlquery {
     }
   }
 
-  // resetDB
-  public function resetDB($table){
-
-    try{
-
-      //get DB object
-      $db = new db();
-
-      //set SQL Query
-      $sql = "DROP DATABASE".$db->$dbname;
-
-      //Connect
-      $db = $db->connect();
-
-      //delete Data
-      $stmt = $db->prepare($sql);
-
-      //execute
-      $stmt->execute();
-      $db = null;
-
-
-    } catch (PDOException $e) {
-        //return '{"error": {"text":'.$e->getMessage().'}';
-        return '<p>Error SQL Query in sqlquery.php: '.$e->getMessage().'</p>';
-    }
+  // Create DB
+  public function createDB(){
 
     try{
 
@@ -361,8 +337,28 @@ class sqlquery {
       //get DB object
       $db = new db();
 
+      //create db
+      $return = $db->create($db_setup->db_setup_string);
+
+      return $return;
+
+    } catch (PDOException $e) {
+        //return '{"error": {"text":'.$e->getMessage().'}';
+        return '<p>Error SQL Query in sqlquery.php: '.$e->getMessage().'</p>';
+    }
+  }
+
+  // resetDB
+  public function resetDB(){
+
+    try{
+
+      //get DB object
+      $db = new db();
+
       //set SQL Query
-      $sql = $db_setup->$db_setup_string;
+      $sql = "DROP DATABASE ".$db->dbname;
+      echo $sql;
 
       //Connect
       $db = $db->connect();
@@ -374,14 +370,16 @@ class sqlquery {
       $stmt->execute();
       $db = null;
 
-      return 'success';
-
     } catch (PDOException $e) {
         //return '{"error": {"text":'.$e->getMessage().'}';
         return '<p>Error SQL Query in sqlquery.php: '.$e->getMessage().'</p>';
     }
+
+    $return = $this->createDB();
+
+    return $return;
+
   }
 
 }
-
  ?>

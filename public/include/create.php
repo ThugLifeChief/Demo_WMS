@@ -7,7 +7,7 @@ if (isset($_GET['submit'])){
 
   $object = new sqlquery;
   //$return = "true";
-  $return = $object->resetDB();
+  $return = $object->createDB();
 
   header("Location: ../ResetDB.php?resetreturn=".$return);
 }

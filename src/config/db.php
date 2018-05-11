@@ -15,5 +15,18 @@ class db{
         return $dbConnection;
     }
 
+    //create new DB
 
+    public function create($string){
+      try {
+
+        $dbh = new PDO("mysql:host=$this->dbhost", $this->dbuser, $this->dbpass);
+        $dbh->exec($string);
+
+        return "success";
+
+      } catch (PDOException $e) {
+        return ("DB ERROR: ". $e->getMessage());
+      }
+    }
 }

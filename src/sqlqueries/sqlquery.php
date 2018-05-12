@@ -1,6 +1,9 @@
 <?php
 
 include_once __DIR__.'/sqlfiles/db_setup_tables.php';
+include_once __DIR__.'/sqlfiles/DemoData.php';
+include_once __DIR__.'/../config/db.php';
+
 
 class sqlquery {
 
@@ -358,7 +361,7 @@ class sqlquery {
 
       //set SQL Query
       $sql = "DROP DATABASE ".$db->dbname;
-      echo $sql;
+      //echo $sql;
 
       //Connect
       $db = $db->connect();
@@ -378,6 +381,42 @@ class sqlquery {
     $return = $this->createDB();
 
     return $return;
+
+  }
+
+  public function insertdemodata(){
+
+
+
+    $demodata = new DemoData();
+
+    for ($i=0; $i < 13; $i++) {
+      try{
+
+        //get DB object
+        $db = new db();
+        //set SQL Query
+        $sql = $demodata->data[$i];
+        //echo $sql;
+
+        //Connect
+        $db = $db->connect();
+
+        //delete Data
+        $stmt = $db->prepare($sql);
+
+        //execute
+        $stmt->execute();
+        $db = null;
+
+
+      } catch (PDOException $e) {
+          echo '{"error": {"text":'.$e->getMessage().'}';
+          return '<p>Error SQL Query in sqlquery.php: '.$e->getMessage().'</p>';
+          exit;
+      }
+    }
+    return 'success';
 
   }
 

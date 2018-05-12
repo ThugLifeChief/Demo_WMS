@@ -66,6 +66,7 @@
       $content = $object->allRowsofTable($table);
       if (!$content == null){
   ?>
+  <div style="overflow-x:auto; height: 350px; overflow: auto;">
   <table>
     <tr>
   <?php
@@ -88,6 +89,7 @@
   ?>
     </tr>
   </table>
+</div>
 
   <?php
       } else {

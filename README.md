@@ -1,5 +1,6 @@
 # Demo_WMS
 ==============================================
+
 Demo Warehouse Management System
 
 Hier sind alle Daten für den htdocs für XAMPP für ein demo Warehouse Management System.
@@ -43,12 +44,12 @@ Allgemeine GET POST PUT DELETE request:
 
 Für POST, PUT hier je ein Beispiel:
 
-POST: 	HEADER: Content-Type: application/json)
-	BODY: {"P_OID":"","P_ZEITSTEMPEL":"2018-04-17","P_ANLAGE_DATUM":"2018-04-17","P_LETZTE_AENDERUNG":"2018-04-17","P_NAME":"test2-Testhalle","P_BESCHREIBUNG":"Hier wird getestet","P_BREITE":"80","P_HOEHE":"8.5","P_LAENGE":"100"}
+POST: 	- HEADER: Content-Type: application/json)
+	- BODY: {"P_OID":"","P_ZEITSTEMPEL":"2018-04-17","P_ANLAGE_DATUM":"2018-04-17","P_LETZTE_AENDERUNG":"2018-04-17","P_NAME":"test2-Testhalle","P_BESCHREIBUNG":"Hier wird getestet","P_BREITE":"80","P_HOEHE":"8.5","P_LAENGE":"100"}
 
 	
-PUT: 	HEADER: Content-Type: application/json)
-	BODY: {"P_OID":"5","P_BREITE":"200","P_HOEHE":"200","P_LAENGE":"2000"}
+PUT: 	- HEADER: Content-Type: application/json)
+	- BODY: {"P_OID":"5","P_BREITE":"200","P_HOEHE":"200","P_LAENGE":"2000"}
 
 =========================================
 

@@ -197,3 +197,14 @@ $app->get('/restapi/functions/TagIDType/id/{id}', function(Request $request, Res
     echo '{"type" : '.json_encode($return).'}';
 
 });
+
+// boolen reportTuggerTrainDelivery(giai trainID)
+$app->get('/restapi/functions/reportTuggerTrainDelivery/giai/{giai}', function(Request $request, Response $response){
+    $giai = $request->getAttribute('giai');
+
+    $object = new functionclass;
+    $return = $object->reportTuggerTrainDelivery($giai);
+
+    echo '{"bool" : '.json_encode($return).'}';
+
+});

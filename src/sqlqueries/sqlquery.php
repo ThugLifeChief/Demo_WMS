@@ -351,6 +351,28 @@ class sqlquery {
     }
   }
 
+  // for intelliRead Demo
+  public function createDBIntelli(){
+
+    try{
+
+      $db_setup = new db_setup();
+
+      //get DB object
+      $db = new db();
+
+      //create db
+      $return = $db->create($db_setup->db_setup_string_Intelli);
+
+      //echo "hat geklappt".$return;
+      return $return;
+
+    } catch (PDOException $e) {
+        //return '{"error": {"text":'.$e->getMessage().'}';
+        return '<p>Error SQL Query in sqlquery.php: '.$e->getMessage().'</p>';
+    }
+  }
+
   // resetDB
   public function resetDB(){
 
@@ -379,6 +401,39 @@ class sqlquery {
     }
 
     $return = $this->createDB();
+
+    return $return;
+
+  }
+
+  // resetDB for IntelliREAD
+  public function resetDBIntelli(){
+
+    try{
+
+      //get DB object
+      $db = new db();
+
+      //set SQL Query
+      $sql = "DROP DATABASE ".$db->dbname;
+      //echo $sql;
+
+      //Connect
+      $db = $db->connect();
+
+      //delete Data
+      $stmt = $db->prepare($sql);
+
+      //execute
+      $stmt->execute();
+      $db = null;
+
+    } catch (PDOException $e) {
+        //return '{"error": {"text":'.$e->getMessage().'}';
+        return '<p>Error SQL Query in sqlquery.php: '.$e->getMessage().'</p>';
+    }
+
+    $return = $this->createDBIntelli();
 
     return $return;
 

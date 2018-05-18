@@ -327,7 +327,7 @@
       //get P_GRAI_ID from ANHAENGER
       $table = 'ANHAENGER';
       $column = 'P_GRAI_ID';
-      $index = 'P_OID';
+      $index = 'STELLPLATZ_P_OID';
       $search = $P_OID;
 
       $return = $object->SelectFromDB($table,$column,$index,$search);
@@ -415,6 +415,7 @@
       $search = $giai;
 
       $object = new sqlquery2;
+      $object2 = new sqlquery;
 
       $P_OID = $object->SelectFromDB($table,$column,$index,$search);
 
@@ -441,13 +442,36 @@
 
       //print_r($P_OIDs);
 
-      $object2 = new sqlquery;
+
 
       foreach ($P_OIDs as $P_OID => $value) {
 
+        // update Anhänger
         $data = array('P_OID' => $value, 'STELLPLATZ_P_OID' => NULL);
         $return = $object2->updateTable($table,$data);
 
+        // Stellplatz Lagerhilfsmittel löschen
+        //get P_OID from LADEHILFSMITTEL
+        $table = 'LADEHILFSMITTEL';
+        $column = 'P_OID';
+        $index = 'ANHAENGER_P_OID';
+        $search = $value;
+
+        $return1 = $object->SelectFromDB($table,$column,$index,$search);
+
+        if ($return1 != NULL){
+          //set DATA array for Update
+          $table = 'LADEHILFSMITTEL';
+          $data = array('P_OID' => $return1, 'STELLPLATZ_P_OID' => NULL);
+
+          // Update P_OID (from LADEHILFSMITTEL) with P_STELLPLATZ_P_OID = NULL
+          $return = $object2->updateTable($table,$data);
+
+          if($return != 'success'){
+            return $return;
+            exit;
+          }
+        }
         echo '{"return" : '.json_encode($return).'}';
       }
       return 'overallsuccess';
@@ -576,9 +600,17 @@
 
       $TRANSPORTAUFTRAG_P_OID = $object->SelectFromDB($table,$column,$index,$search);
 
+      //get Stellplatz_ziel
+      $table = 'TRANSPORTAUFTRAG';
+      $column = 'P_ZIEL';
+      $index = 'P_OID';
+      $search = $TRANSPORTAUFTRAG_P_OID;
+
+      $STELLPLATZ_P_OID = $object->SelectFromDB($table,$column,$index,$search);
+
       //set DATA array for Update
       $table = 'LADEHILFSMITTEL';
-      $data = array('P_OID' => $return1,'ANHAENGER_P_OID' => $return2,'TRANSPORTAUFTRAG_P_OID' => null);
+      $data = array('P_OID' => $return1,'ANHAENGER_P_OID' => $return2,'TRANSPORTAUFTRAG_P_OID' => null, 'STELLPLATZ_P_OID' => $STELLPLATZ_P_OID);
 
       // Update P_OID (from LADEHILFSMITTEL) with ANHAENGER_P_OID
       $object2 = new sqlquery;
@@ -863,7 +895,6 @@
 
       $FLURFOERDERMITTEL_P_OID = $object->SelectFromDB($table,$column,$index,$search);
 
-
       //get ANHAENGER P_OID
       $table = 'ANHAENGER';
       $column = 'P_OID';
@@ -1056,7 +1087,57 @@
       }
 
     }
+
+    // boolen reportTuggerTrainDelivery(giai trainID)
+    public function reportTuggerTrainDelivery($giai){
+
+      //get FLURFOERDERMITTEL P_OID
+      $table = 'FLURFOERDERMITTEL';
+      $column = 'P_OID';
+      $index = 'P_GIAI_ID';
+      $search = $giai;
+
+      $object = new sqlquery2;
+      $object2 = new sqlquery;
+
+      $P_OID = $object->SelectFromDB($table,$column,$index,$search);
+
+      if ($P_OID == null){
+        return 'giai not in Table FLURFOERDERMITTEL';
+        exit;
+      }
+
+      //get  P_OID
+      $table = 'TRANSPORTAUFTRAG';
+      $column = 'P_OID';
+      $index = 'FLURFOERDERMITTEL_P_OID';
+      $search = $P_OID;
+
+
+      $P_OIDs = $object->SelectFromDBALL($table,$column,$index,$search);
+
+      if ($P_OIDs == null){
+        return 'No TRANSPORTAUFTRAG in Table';
+        exit;
+      }
+
+      //print_r($P_OIDs);
+
+      foreach ($P_OIDs as $P_OID => $value) {
+
+        $table = 'TRANSPORTAUFTRAG';
+        $data = array('P_OID' => $value,'P_STATUS' => 'FINISHED');
+
+        $return = $object2->updateTable($table,$data);
+
+      }
+      return "success";
+    }
+
+
+
 }
+
 
 
 

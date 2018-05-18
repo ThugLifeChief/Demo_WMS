@@ -35,6 +35,8 @@ if (isset($_POST['P_OID'])){
 
   $P_QUELLE = $object->SelectFromDB($table,$column,$index,$search);
 
+//  echo $grai."und".$P_ZIEL."<br>";
+
   if($P_ZIEL != null && $grai != null){
     $object3 = new functionclass;
     if($P_ZIEL == 'extern'){
@@ -44,16 +46,45 @@ if (isset($_POST['P_OID'])){
 
       if (is_numeric($P_QUELLE))
       {
-        $return = $object3->removeFrom($grai,$P_QUELLE);
-        print_r($return);
+        // get sgln from STELLPLATZ
+        $table = 'STELLPLATZ';
+        $column = 'P_SGLN_ID';
+        $index = 'P_OID';
+        $search = $P_QUELLE;
+
+        $sgln = $object->SelectFromDB($table,$column,$index,$search);
+
+        $return = $object3->removeFrom($grai,$sgln);
+        //print_r($return);
       }
 
-      // try store to STELLPLATZ
-      $return = $object3->storeTo($grai,$P_ZIEL);
+      // try store to ANHAENGER
+      // get sgln from ANHAENGER
+      $table = 'ANHAENGER';
+      $column = 'P_GRAI_ID';
+      $index = 'STELLPLATZ_P_OID';
+      $search = $P_ZIEL;
+
+      $grai2 = $object->SelectFromDB($table,$column,$index,$search);
+
+      echo "Hier".$grai2;
+
+      $return = $object3->loadTo($grai,$grai2);
+
 
       if($return != 'success'){
-        // try store to ANHAENGER
-        $return = $object3->loadTo($grai,$P_ZIEL);
+
+        // try store to STELLPLATZ
+
+        // get sgln from STELLPLATZ
+        $table = 'STELLPLATZ';
+        $column = 'P_SGLN_ID';
+        $index = 'P_OID';
+        $search = $P_ZIEL;
+
+        $sgln = $object->SelectFromDB($table,$column,$index,$search);
+
+        $return = $object3->storeTo($grai,$sgln);
       }
 
     }

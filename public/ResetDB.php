@@ -37,5 +37,17 @@ include_once 'include/reset.php';
           echo "<p>".$_GET['demodatareturn']."</p>";
         }
      ?>
+
+     <h1>Here you can reset the Database for the IntelliREAD Demo</h1>
+     <h3>Reset Database for IntelliREAD</h3>
+     <form action="include/resettoIntelli.php" method="get">
+       <button type="submit" name="submit">Reset Database</button>
+     </form>
+
+     <?php
+         if(isset($_GET['resetintellireturn'])){
+           echo "<p>".$_GET['resetintellireturn']."</p>";
+         }
+      ?>
    </body>
    </html>

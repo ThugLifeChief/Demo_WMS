@@ -447,8 +447,14 @@
       foreach ($P_OIDs as $P_OID => $value) {
 
         // update Anhänger
+        $table = 'ANHAENGER';
+
         $data = array('P_OID' => $value, 'STELLPLATZ_P_OID' => NULL);
         $return = $object2->updateTable($table,$data);
+
+        //print_r($data);
+        //echo "Tabelle: ". $table;
+
 
         // Stellplatz Lagerhilfsmittel löschen
         //get P_OID from LADEHILFSMITTEL
@@ -467,14 +473,10 @@
           // Update P_OID (from LADEHILFSMITTEL) with P_STELLPLATZ_P_OID = NULL
           $return = $object2->updateTable($table,$data);
 
-          if($return != 'success'){
-            return $return;
-            exit;
-          }
         }
-        echo '{"return" : '.json_encode($return).'}';
+
       }
-      return 'overallsuccess';
+      return 'success';
     }
 
     // bool receivedGoods(grai largeLoadCarrierID)
@@ -978,6 +980,62 @@
       }
     }
 
+    // void requestTuggerTrainLoadingIntelli(giai trainID)
+    public function requestTuggerTrainLoadingIntelli($giai){
+
+      $object2 = new sqlquery;
+
+      //Trailer auf STELLPLATZ buchen
+      $table = 'ANHAENGER';
+
+      $data = array('P_OID' => '1', 'STELLPLATZ_P_OID' => '21');
+      $return = $object2->updateTable($table,$data);
+      if($return != 'success'){return $return; exit;}
+
+      $data = array('P_OID' => '2', 'STELLPLATZ_P_OID' => '22');
+      $return = $object2->updateTable($table,$data);
+      if($return != 'success'){return $return; exit;}
+
+      //LHM auf STELLPLATZ buchen
+      $table = 'LADEHILFSMITTEL';
+
+      $data = array('P_OID' => '1', 'ANHAENGER_P_OID' => '1', 'STELLPLATZ_P_OID' => '21');
+      $return = $object2->updateTable($table,$data);
+      if($return != 'success'){return $return; exit;}
+
+      $data = array('P_OID' => '2', 'ANHAENGER_P_OID' => '2', 'STELLPLATZ_P_OID' => '22');
+      $return = $object2->updateTable($table,$data);
+      if($return != 'success'){return $return; exit;}
+
+      $data = array('P_OID' => '4', 'STELLPLATZ_P_OID' => '23');
+      $return = $object2->updateTable($table,$data);
+      if($return != 'success'){return $return; exit;}
+
+      $data = array('P_OID' => '5', 'STELLPLATZ_P_OID' => '24');
+      $return = $object2->updateTable($table,$data);
+      if($return != 'success'){return $return; exit;}
+
+      //Transportaufträge erstellen
+      //createTransportauftrag($Quelle,$Ziel,$Status,$FLURFOERDERMITTEL_P_OID,$STETIG_FOERDERER_P_OID,$LOGISTIKZENTRUM_P_OID)
+
+
+      $object3 = new sqlquery2;
+
+      $return = $object3->createTransportauftrag('21','28','OFFEN','4',null,'1');
+      if(is_numeric($return) == false){return $return; exit;}
+
+      $return = $object3->createTransportauftrag('22','29','OFFEN','4',null,'1');
+      if(is_numeric($return) == false){return $return; exit;}
+
+      $return = $object3->createTransportauftrag('23','21','OFFEN','4',null,'1');
+      if(is_numeric($return) == false){return $return; exit;}
+
+      $return = $object3->createTransportauftrag('24','29','OFFEN','4',null,'1');
+      if(is_numeric($return) == false){return $return; exit;}
+
+      return 'success';
+    }
+
     // bool Storageblocked(sgln)
     public function Storageblocked($sgln){
 
@@ -1107,6 +1165,66 @@
         exit;
       }
 
+      //get ANHAENGER P_OID
+      $table = 'ANHAENGER';
+      $column = 'P_OID';
+      $index = 'FLURFOERDERMITTEL_P_OID';
+      $search = $P_OID;
+
+
+      $ANHAENGER_P_OIDs = $object->SelectFromDBALL($table,$column,$index,$search);
+
+      if ($ANHAENGER_P_OIDs == null){
+        return 'ANHAENGER not linked to FLURFOERDERMITTEL';
+        exit;
+      }
+
+      //get  P_OID
+      $table = 'TRANSPORTAUFTRAG';
+      $column = 'P_ZIEL';
+      $index = 'FLURFOERDERMITTEL_P_OID';
+      $search = $P_OID;
+
+      $P_ZIELe = $object->SelectFromDBALL($table,$column,$index,$search);
+
+      //print_r($P_ZIELe);
+
+      $Ziel = array();
+      foreach ($P_ZIELe as $P_ZIEL => $value) {
+        array_push($Ziel, $value);
+      }
+
+      //print_r($Ziel);
+
+      $i = 0;
+
+      foreach ($ANHAENGER_P_OIDs as $index => $value) {
+
+        //Lagerhilfsmittel auf STELLPLATZ buchen
+        //get P_OID from LADEHILFSMITTEL
+        $table = 'LADEHILFSMITTEL';
+        $column = 'P_OID';
+        $index = 'ANHAENGER_P_OID';
+        $search = $value;
+
+        $return1 = $object->SelectFromDB($table,$column,$index,$search);
+
+
+        if ($return1 != NULL){
+          //set DATA array for Update
+
+          $table = 'LADEHILFSMITTEL';
+
+          $data = array('P_OID' => $return1, 'STELLPLATZ_P_OID' => $P_ZIELe[$i], 'ANHAENGER_P_OID' => NULL);
+
+          $i++;
+          // Update P_OID (from LADEHILFSMITTEL) with P_STELLPLATZ_P_OID = NULL
+          $return = $object2->updateTable($table,$data);
+
+        }
+
+      }
+
       //get  P_OID
       $table = 'TRANSPORTAUFTRAG';
       $column = 'P_OID';
@@ -1114,16 +1232,14 @@
       $search = $P_OID;
 
 
-      $P_OIDs = $object->SelectFromDBALL($table,$column,$index,$search);
+      $TRANSPORTAUFTRAGs = $object->SelectFromDBALL($table,$column,$index,$search);
 
-      if ($P_OIDs == null){
+      if ($TRANSPORTAUFTRAGs == null){
         return 'No TRANSPORTAUFTRAG in Table';
         exit;
       }
 
-      //print_r($P_OIDs);
-
-      foreach ($P_OIDs as $P_OID => $value) {
+      foreach ($TRANSPORTAUFTRAGs as $TRANSPORTAUFTRAG => $value) {
 
         $table = 'TRANSPORTAUFTRAG';
         $data = array('P_OID' => $value,'P_STATUS' => 'FINISHED');
@@ -1133,8 +1249,6 @@
       }
       return "success";
     }
-
-
 
 }
 

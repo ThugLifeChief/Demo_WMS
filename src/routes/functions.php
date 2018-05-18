@@ -170,7 +170,8 @@ $app->get('/restapi/functions/requestTuggerTrainLoading/giai/{giai}', function(R
     $giai = $request->getAttribute('giai');
 
     $object = new functionclass;
-    $return = $object->requestTuggerTrainLoading($giai);
+    //$return = $object->requestTuggerTrainLoading($giai);
+    $return = $object->requestTuggerTrainLoadingIntelli($giai);
 
     echo '{"return" : '.json_encode($return).'}';
 

@@ -1030,7 +1030,7 @@
       $return = $object3->createTransportauftrag('23','21','OFFEN','4',null,'1');
       if(is_numeric($return) == false){return $return; exit;}
 
-      $return = $object3->createTransportauftrag('24','29','OFFEN','4',null,'1');
+      $return = $object3->createTransportauftrag('24','22','OFFEN','4',null,'1');
       if(is_numeric($return) == false){return $return; exit;}
 
       return 'success';
